@@ -1,5 +1,5 @@
 import numpy as np
-from scipy. integrate import odeint
+from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 
 class DifferentialEquation:
@@ -8,23 +8,28 @@ class DifferentialEquation:
         self.__begin = a
         self.__end = b
         self.__step = h
-        self.__n = (b - a) // h
         self.__y0 = y0
-        self.__x = np.linspace(a, b, self.__n + 1)
-        self.__func = lambda y, x: x + y
+
+        self.__x = [a]
+        i = 1
+        while self.__x[-1] != b:
+            self.__x.append(a + i * h)
+            i += 1
+
+        self.__func = lambda y, x: (2 - x**2 - y**2) / (2 + x**2 + x * y)
 
     def EulersMethod(self):
         y = [self.__y0]
         i = 1
-        while i <= self.__n:
+        while self.__x[i-1] < self.__end:
             y.append(y[-1] + self.__step * self.__func(y[-1], self.__x[i - 1]))
             i += 1
         return y
     
     def SecondOrderMethod(self):
         y = [self.__y0]
-        i = 0
-        while i <= self.__n:
+        i = 1
+        while self.__x[i-1] < self.__end:
             y.append(y[-1] + self.__step 
                      * self.__func(y[-1] + self.__step / 2 * self.__func(y[-1], self.__x[i - 1]),
                                    self.__x[i-1] + self.__step / 2)) 
@@ -33,8 +38,8 @@ class DifferentialEquation:
     
     def RK4(self):
         y = [self.__y0]
-        i = 0
-        while i <= self.__n:
+        i = 1
+        while self.__x[i-1] < self.__end:
             k1 = self.__step * self.__func(y[-1], self.__x[i - 1])
             k2 = self.__step * self.__func(y[-1] + k1 / 2, 
                                            self.__x[i - 1] + self.__step / 2)
@@ -51,16 +56,27 @@ class DifferentialEquation:
 
 
     def Graph(self):
-        plt.style.use("bmh")
-        plt.xlim([self.__begin, self.__end])
-        plt.plot(self.__x, EulersMethod(), color = 'tomato')
-        plt.plot(self.__x, SecondOrderMethod(), color = 'blue')
-        plt.plot(self.__x, RK4(), color = 'black')
-        plt.plot(self.__x, RealValue(), color = 'pink')
+        plt.style.use("ggplot")
+        plt.plot(self.__x, self.EulersMethod(), color = 'tomato', 
+                 label = 'Method Runge-Kutta first order (Euler\'s Method)')
+        plt.plot(self.__x, self.SecondOrderMethod(), color = 'royalblue', linestyle = '--', 
+                 label = 'Method Runge-Kutta second order')
+        plt.plot(self.__x, self.RK4(), color = 'black', linestyle = '-.', 
+                 label = 'Method Runge-Kutta fourth order')
+        plt.plot(self.__x, self.RealValue(), color = 'sandybrown', linestyle = '-', 
+                 label = 'Real solution of equation')
         plt.plot(self.__begin, self.__y0, 'g^')
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.title('A particular solution of equation')
+        plt.legend()
         plt.show()
 
 def Main():
+    a = 0
+    b = 1
+    h = 0.1
+    y0 = 0
     ude = DifferentialEquation(a, b, h, y0)
     ude.Graph()
     pass
