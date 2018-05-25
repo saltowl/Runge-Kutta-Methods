@@ -65,7 +65,7 @@ class DifferentialEquation:
 				 label = 'Method Runge-Kutta fourth order')
 		plt.plot(self.__x, self.RealValue(), color = 'sandybrown', linestyle = '-', 
 				 label = 'Real solution of equation')
-		plt.plot(self.__begin, self.__y0, 'g^')
+		plt.plot(self.__begin, self.__y0, 'g^', label = 'The initial condition')
 		plt.xlabel('X')
 		plt.ylabel('Y')
 		plt.title('A particular solution of equation')
